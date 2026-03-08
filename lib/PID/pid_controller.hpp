@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+namespace ball_plate {
+
 class PIDController {
 public:
     PIDController(float kp, float ki, float kd,
@@ -68,3 +70,5 @@ private:
     float _last_error  = 0.0f;
     float _last_output = 0.0f;
 };
+
+} // namespace ball_plate

@@ -3,6 +3,7 @@
         "functional": "cpp",
         "iosfwd": "cpp",
         "limits": "cpp",
-        "streambuf": "cpp"
+        "streambuf": "cpp",
+        "utility": "cpp"
     }
 }

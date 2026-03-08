@@ -3,8 +3,10 @@
 #include <Servo.h>
 #include "servo_interface.hpp"
 
-/// Concrete ServoInterface backed by the Arduino Servo library.
-class ArduinoServo final : public ServoInterface {
+namespace ball_plate {
+
+/// Concrete IServo backed by the Arduino Servo library.
+class ArduinoServo final : public IServo {
 public:
     explicit ArduinoServo(int pin) { servo_.attach(pin); }
 
@@ -20,3 +22,5 @@ private:
     Servo  servo_;
     float  offset_ = 0.0f;
 };
+
+} // namespace ball_plate

@@ -4,12 +4,14 @@
 #include <Adafruit_PWMServoDriver.h>
 #include "servo_interface.hpp"
 
-/// Concrete ServoInterface backed by a PCA9685 PWM driver board (via I2C).
+namespace ball_plate {
+
+/// Concrete IServo backed by a PCA9685 PWM driver board (via I2C).
 ///
 /// Each instance controls one channel on the PCA9685. Multiple instances
 /// can share the same Adafruit_PWMServoDriver object (and thus the same
 /// physical board) by passing a reference to the constructor.
-class PCA9685Servo final : public ServoInterface {
+class PCA9685Servo final : public IServo {
 public:
     /// Default pulse-width limits that map 0-180° to 500-2500 µs.
     static constexpr uint16_t kDefaultMinPulseUs = 500;
@@ -46,3 +48,5 @@ private:
     uint16_t maxUs_;
     float    offset_ = 0.0f;
 };
+
+} // namespace ball_plate

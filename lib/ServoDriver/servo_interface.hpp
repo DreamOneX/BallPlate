@@ -1,16 +1,20 @@
 #pragma once
 
-class ServoInterface {
-public:
-    virtual ~ServoInterface() = default;
+namespace ball_plate {
 
-    ServoInterface(const ServoInterface&) = delete;
-    ServoInterface& operator=(const ServoInterface&) = delete;
+class IServo {
+public:
+    virtual ~IServo() = default;
+
+    IServo(const IServo&) = delete;
+    IServo& operator=(const IServo&) = delete;
 
     virtual void write(float angle) = 0;
 
     virtual void setOffset(float offset) = 0;
 
 protected:
-    ServoInterface() = default;
+    IServo() = default;
 };
+
+} // namespace ball_plate

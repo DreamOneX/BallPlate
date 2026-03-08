@@ -6,6 +6,8 @@
 #include "position/uart_pos_provider.hpp"
 #include <servo_interface.hpp>
 
+namespace ball_plate {
+
 /// Data computed by the Timer ISR, consumed by loop()
 struct ControlOutput {
     float posX, posY;
@@ -20,9 +22,9 @@ struct ControlOutput {
 /// applyOutputs() from loop() to write the servos and report to the host.
 class ControlLoop {
 public:
-    ControlLoop(UartPosProvider& pos,
+    ControlLoop(IPosProvider& pos,
                 PIDController& pidX, PIDController& pidY,
-                ServoInterface& servoX, ServoInterface& servoY)
+                IServo& servoX, IServo& servoY)
         : _pos(pos), _pidX(pidX), _pidY(pidY),
           _servoX(servoX), _servoY(servoY) {}
 
@@ -73,13 +75,15 @@ private:
         _output.ready  = true;
     }
 
-    UartPosProvider& _pos;
+    IPosProvider& _pos;
     PIDController&   _pidX;
     PIDController&   _pidY;
-    ServoInterface&  _servoX;
-    ServoInterface&  _servoY;
+    IServo&  _servoX;
+    IServo&  _servoY;
     HardwareTimer*   _timer = nullptr;
     uint32_t         _freq  = CONTROL_FREQ_HZ;
 
     ControlOutput _output = {};
 };
+
+} // namespace ball_plate

@@ -2,8 +2,10 @@
 
 #include "pos_provider.hpp"
 
+namespace ball_plate {
+
 // Text protocol: `X,Y\n`, comma-separated floats, newline terminated
-class UartPosProvider : public PosProvider {
+class UartPosProvider : public IPosProvider {
 public:
     explicit UartPosProvider(HardwareSerial& serial, uint32_t baud = 115200)
         : _serial(serial), _baud(baud) {}
@@ -30,7 +32,7 @@ public:
     }
 
     /// Call frequently from loop() to drain UART buffer and update latest position
-    void update() {
+    void update() override {
         Position pos;
         while (read(pos)) {
             noInterrupts();
@@ -41,7 +43,7 @@ public:
     }
 
     /// ISR-safe: atomically copy the latest position (returns true if new data available)
-    bool getLatest(Position& out) {
+    bool getLatest(Position& out) override {
         noInterrupts();
         bool ok = _hasNew;
         if (ok) {
@@ -70,3 +72,5 @@ private:
     Position _latest = {};   // guarded by noInterrupts()
     volatile bool _hasNew = false;
 };
+
+} // namespace ball_plate
