@@ -29,6 +29,29 @@ public:
         return false;
     }
 
+    /// Call frequently from loop() to drain UART buffer and update latest position
+    void update() {
+        Position pos;
+        while (read(pos)) {
+            noInterrupts();
+            _latest = pos;
+            _hasNew = true;
+            interrupts();
+        }
+    }
+
+    /// ISR-safe: atomically copy the latest position (returns true if new data available)
+    bool getLatest(Position& out) {
+        noInterrupts();
+        bool ok = _hasNew;
+        if (ok) {
+            out = _latest;
+            _hasNew = false;
+        }
+        interrupts();
+        return ok;
+    }
+
 private:
     static bool parse(const char* line, Position& out) {
         char* comma = strchr(line, ',');
@@ -43,4 +66,7 @@ private:
     uint32_t _baud;
     char _buf[32] = {};
     uint8_t _len  = 0;
+
+    Position _latest = {};   // guarded by noInterrupts()
+    volatile bool _hasNew = false;
 };
