@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include "config.hpp"
+#include <config.hpp>
 #include "host_report.hpp"
-#include "servo/pca9685_servo.hpp"
-#include "pid/pid_controller.hpp"
+#include <pca9685_servo.hpp>
+#include <pid_controller.hpp>
 #include "position/uart_pos_provider.hpp"
 #include "control_loop.hpp"
 

@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "pid/pid_controller.hpp"
+#include <pid_controller.hpp>
 
 // ── Helper ──────────────────────────────────────────────────
 static constexpr float DT = 0.01f;  // 10 ms step

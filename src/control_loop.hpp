@@ -1,10 +1,10 @@
 #pragma once
 
 #include <HardwareTimer.h>
-#include "config.hpp"
-#include "pid/pid_controller.hpp"
+#include <config.hpp>
+#include <pid_controller.hpp>
 #include "position/uart_pos_provider.hpp"
-#include "servo/servo_interface.hpp"
+#include <servo_interface.hpp>
 
 /// Data computed by the Timer ISR, consumed by loop()
 struct ControlOutput {
