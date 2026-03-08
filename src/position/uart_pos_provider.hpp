@@ -14,23 +14,6 @@ public:
         _serial.begin(_baud);
     }
 
-    bool read(Position& out) override {
-        while (_serial.available()) {
-            char c = _serial.read();
-
-            if (c == '\n') {
-                _buf[_len] = '\0';
-                bool ok = parse(_buf, out);
-                _len = 0;
-                return ok;
-            }
-
-            if (_len < sizeof(_buf) - 1)
-                _buf[_len++] = c;
-        }
-        return false;
-    }
-
     /// Call frequently from loop() to drain UART buffer and update latest position
     void update() override {
         Position pos;
@@ -63,6 +46,24 @@ private:
         out.y = atof(comma + 1);
         return true;
     }
+
+    bool read(Position& out) {
+        while (_serial.available()) {
+            char c = _serial.read();
+
+            if (c == '\n') {
+                _buf[_len] = '\0';
+                bool ok = parse(_buf, out);
+                _len = 0;
+                return ok;
+            }
+
+            if (_len < sizeof(_buf) - 1)
+                _buf[_len++] = c;
+        }
+        return false;
+    }
+
 
     HardwareSerial& _serial;
     uint32_t _baud;

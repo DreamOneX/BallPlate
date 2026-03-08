@@ -75,13 +75,13 @@ private:
         _output.ready  = true;
     }
 
-    IPosProvider& _pos;
-    PIDController&   _pidX;
-    PIDController&   _pidY;
-    IServo&  _servoX;
-    IServo&  _servoY;
-    HardwareTimer*   _timer = nullptr;
-    uint32_t         _freq  = CONTROL_FREQ_HZ;
+    IPosProvider&   _pos;
+    PIDController&  _pidX;
+    PIDController&  _pidY;
+    IServo&         _servoX;
+    IServo&         _servoY;
+    HardwareTimer*  _timer = nullptr;
+    uint32_t        _freq  = CONTROL_FREQ_HZ;
 
     ControlOutput _output = {};
 };
