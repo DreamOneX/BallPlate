@@ -16,8 +16,8 @@ static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
 static IServo* servoX = &realServoX;
 static IServo* servoY = &realServoY;
 
-static PIDController pidX(KP, KI, KD, TARGET_X);
-static PIDController pidY(KP, KI, KD, TARGET_Y);
+static PIDController pidX(KP, KI, KD, CENTER_X);
+static PIDController pidY(KP, KI, KD, CENTER_Y);
 
 
 static UartPosProvider realPosProvider(Serial1, CAMERA_BAUD);

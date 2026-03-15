@@ -1,6 +1,8 @@
 #include <unity.h>
 #include <pid_controller.hpp>
 
+using namespace ball_plate;
+
 // ── Helper ──────────────────────────────────────────────────
 static constexpr float DT = 0.01f;  // 10 ms step
 

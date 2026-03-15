@@ -23,8 +23,13 @@ constexpr float KI = 0.02f;
 constexpr float KD = 0.3f;
 
 // ── Control targets ─────────────────────────────────────────
-constexpr float TARGET_X = 160.0f;
-constexpr float TARGET_Y = 120.0f;
+constexpr float WIDTH = 320.0f;
+constexpr float HEIGHT = 240.0f;
+constexpr float CENTER_X = WIDTH / 2.0f;
+constexpr float CENTER_Y = HEIGHT / 2.0f;
 
 // ── Control loop ────────────────────────────────────────────
 constexpr uint32_t CONTROL_FREQ_HZ = 60;  // Timer ISR frequency (adjustable)
+
+// ── Remote control ─────────────────────────────────────────
+constexpr bool ALLOW_REMOTE_RESUME = true;  // false = disable wireless resume, require hardware reset
