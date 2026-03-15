@@ -5,5 +5,10 @@
         "limits": "cpp",
         "streambuf": "cpp",
         "utility": "cpp"
-    }
+    },
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy",
+        "--query-driver=$HOME/.platformio/packages/**/bin/*"
+    ]
 }
