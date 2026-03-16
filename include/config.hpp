@@ -31,5 +31,9 @@ constexpr float CENTER_Y = HEIGHT / 2.0f;
 // ── Control loop ────────────────────────────────────────────
 constexpr uint32_t CONTROL_FREQ_HZ = 60;  // Timer ISR frequency (adjustable)
 
+// ── Host reporting ─────────────────────────────────────────
+constexpr bool ENABLE_HOST_REPORT = true;  // CSV reporting to host via Serial
+
 // ── Remote control ─────────────────────────────────────────
-constexpr bool ALLOW_REMOTE_RESUME = true;  // false = disable wireless resume, require hardware reset
+constexpr bool ENABLE_REMOTE       = false;  // set true when ICommandReceiver impl is available
+constexpr bool ALLOW_REMOTE_RESUME = true;   // false = disable wireless resume, require hardware reset

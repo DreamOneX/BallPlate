@@ -5,6 +5,9 @@
 #include <pid_controller.hpp>
 #include "position/uart_pos_provider.hpp"
 #include "control_loop.hpp"
+#include <command_dispatcher.hpp>
+#include <serial_receiver.hpp>
+#include "remote/remote_handler.hpp"
 
 using namespace ball_plate;
 
@@ -26,6 +29,10 @@ static IPosProvider* posProvider = &realPosProvider;
 static ControlLoop control(*posProvider, pidX, pidY, *servoX, *servoY);
 static bool ledState = false;
 
+// ── Remote control ─────────────────────────────────────────
+static CommandDispatcher dispatcher;
+static SerialReceiver   remoteReceiver(Serial, HOST_BAUD);
+
 void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
@@ -42,6 +49,10 @@ void setup() {
 
     control.begin();  // start Timer ISR at CONTROL_FREQ_HZ
 
+    if constexpr (ENABLE_REMOTE) {
+        setupRemoteHandlers(dispatcher, control);
+    }
+
     digitalWrite(LED1_PIN, LOW);
     digitalWrite(LED2_PIN, LOW);
 }
@@ -50,11 +61,15 @@ void loop() {
     // Drain UART buffer → update latest position (main context, not ISR)
     posProvider->update();
 
+    if constexpr (ENABLE_REMOTE) {
+        dispatcher.poll(remoteReceiver);
+    }
+
     // When ISR has computed new PID output, write servos (I2C) and report
     if (control.applyOutputs()) {
         const auto& out = control.output();
-        REPORT_TO_HOST("X", out.posX, pidX, out.angleX);
-        REPORT_TO_HOST("Y", out.posY, pidY, out.angleY);
+        reportToHost("X", out.posX, pidX, out.angleX);
+        reportToHost("Y", out.posY, pidY, out.angleY);
 
         ledState = !ledState;
         digitalWrite(LED1_PIN, ledState);
