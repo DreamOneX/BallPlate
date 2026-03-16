@@ -1,20 +1,21 @@
 #pragma once
 
 #include <Arduino.h>
+#include <config.hpp>
+#include <pid_controller.hpp>
 
-// ── Host reporting ──────────────────────────────────────────
-// Uncomment the next line to enable CSV reporting to host via Serial
-#define ENABLE_HOST_REPORT
+namespace ball_plate {
 
-#ifdef ENABLE_HOST_REPORT
-#define REPORT_TO_HOST(label, curr, pid, angle)  do { \
-    Serial.print(label);       Serial.print(':');  \
-    Serial.print(curr,   2);   Serial.print(',');  \
-    Serial.print((pid).target(),    2); Serial.print(','); \
-    Serial.print((pid).lastError(),  2); Serial.print(','); \
-    Serial.print((pid).lastOutput(), 2); Serial.print(','); \
-    Serial.println(angle, 2);                       \
-} while(0)
-#else
-#define REPORT_TO_HOST(label, curr, pid, angle) ((void)0)
-#endif
+inline void reportToHost(const char* label, float curr,
+                         const PIDController& pid, float angle) {
+    if constexpr (ENABLE_HOST_REPORT) {
+        Serial.print(label);               Serial.print(':');
+        Serial.print(curr, 2);             Serial.print(',');
+        Serial.print(pid.target(), 2);     Serial.print(',');
+        Serial.print(pid.lastError(), 2);  Serial.print(',');
+        Serial.print(pid.lastOutput(), 2); Serial.print(',');
+        Serial.println(angle, 2);
+}
+    }
+
+} // namespace ball_plate
