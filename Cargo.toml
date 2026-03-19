@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ball-plate-pid",
+    "crates/ball-plate-protocol",
+    "crates/ball-plate-fw",
+]

@@ -2,3 +2,9 @@
 .cache
 .vscode
 compile_commands.json
+.cargo
+target
+debug
+*.pdb
+**/mutants.out*/
+**/*.rs.bk

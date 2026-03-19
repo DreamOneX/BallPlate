@@ -1,3 +1,0 @@
-CompileFlags:
-  Add:
-    - -fgnuc-version=12.2.1
