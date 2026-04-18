@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <SPI.h>
+#include <Wire.h>
 #include <config.hpp>
 #include "HardwareSerial.h"
 #include <Servo.h>
@@ -18,9 +20,12 @@ using namespace ball_plate;
 // static PCA9685Servo realServoX(pwmDriver, SERVO_X_CHANNEL);
 // static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
 
-static HardwareSerial& dbgSerial = Serial1;
-static HardwareSerial& posSerial = Serial1;
-static HardwareSerial& remoteSerial = Serial2;
+static HardwareSerial Serial_1(PA9, PA10);
+static HardwareSerial Serial_2(PA2, PA3);
+
+static HardwareSerial& dbgSerial = Serial_1;
+static HardwareSerial& posSerial = Serial_1;
+static HardwareSerial& remoteSerial = Serial_2;
 
 static ArduinoServo realServoX(SERVO_X_PIN);
 static ArduinoServo realServoY(SERVO_Y_PIN);
@@ -57,8 +62,8 @@ void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
 
-    Serial1.begin(HOST_BAUD);
-    Serial2.begin(HOST_BAUD);
+    Serial_1.begin(HOST_BAUD);
+    Serial_2.begin(HOST_BAUD);
     posProvider.begin();
 
     // Wire.begin();
