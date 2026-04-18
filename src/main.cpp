@@ -21,11 +21,11 @@ using namespace ball_plate;
 // static PCA9685Servo realServoX(pwmDriver, SERVO_X_CHANNEL);
 // static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
 
-static HardwareSerial Serial_1(PA10, PA9);
+static HardwareSerial Serial_1(PA9, PA10);
 static HardwareSerial Serial_2(PA3, PA2);
 
 static HardwareSerial& dbgSerial = Serial_1;
-static HardwareSerial& posSerial = Serial_1;
+static HardwareSerial& posSerial = Serial_2;
 static HardwareSerial& remoteSerial = Serial_2;
 
 static ArduinoServo realServoX(SERVO_X_PIN);
@@ -62,6 +62,18 @@ inline void reportToHost(const char* label, float curr,
 void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
+
+    for (int i = 0; i < 50; i++) {
+        digitalWrite(LED1_PIN, HIGH);
+        delay(100);
+        digitalWrite(LED1_PIN, LOW);
+        delay(100);
+        digitalWrite(LED2_PIN, HIGH);
+        delay(100);
+        digitalWrite(LED2_PIN, LOW);
+        delay(100);
+    }
+
     pinMode(PF2, OUTPUT);
     digitalWrite(PF2, HIGH);
 
