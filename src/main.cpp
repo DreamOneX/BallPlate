@@ -21,8 +21,8 @@ using namespace ball_plate;
 // static PCA9685Servo realServoX(pwmDriver, SERVO_X_CHANNEL);
 // static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
 
-static HardwareSerial Serial_1(PA9, PA10);
-static HardwareSerial Serial_2(PA2, PA3);
+static HardwareSerial Serial_1(PA10, PA9);
+static HardwareSerial Serial_2(PA3, PA2);
 
 static HardwareSerial& dbgSerial = Serial_1;
 static HardwareSerial& posSerial = Serial_1;
@@ -66,15 +66,16 @@ void setup() {
     digitalWrite(PF2, HIGH);
 
     Serial_1.begin(HOST_BAUD);
+    Serial_1.println("Hello World");
     Serial_2.begin(HOST_BAUD);
-    posProvider.begin();
+    // posProvider.begin();
 
     // Wire.begin();
     // pwmDriver.begin();
     // pwmDriver.setPWMFreq(PCA9685_PWM_FREQ);
 
-    servoX.write(SERVO_CENTER);
-    servoY.write(SERVO_CENTER);
+    // servoX.write(SERVO_CENTER);
+    // servoY.write(SERVO_CENTER);
 
     control.begin();  // start Timer ISR at CONTROL_FREQ_HZ
 
@@ -87,6 +88,7 @@ void setup() {
 }
 
 void loop() {
+    Serial_1.println("Hello World");
     // Drain UART buffer → update latest position (main context, not ISR)
     posProvider.update();
 
@@ -100,10 +102,13 @@ void loop() {
         reportToHost("X", out.posX, pidX, out.angleX);
         reportToHost("Y", out.posY, pidY, out.angleY);
 
-        ledState = !ledState;
-        digitalWrite(LED1_PIN, ledState);
-        digitalWrite(LED2_PIN, !ledState);
     } else {
         dbgSerial.println("waitting...");
     }
+
+    ledState = !ledState;
+    digitalWrite(LED1_PIN, ledState);
+    digitalWrite(LED2_PIN, !ledState);
+
+    Serial_1.println("Bye World");
 }
