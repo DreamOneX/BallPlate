@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <config.hpp>
-#include "host_report.hpp"
-#include <pca9685_servo.hpp>
+#include "HardwareSerial.h"
+#include <Servo.h>
+#include <servo_interface.hpp>
+#include <arduino_servo.hpp>
 #include <pid_controller.hpp>
 #include "position/uart_pos_provider.hpp"
 #include "control_loop.hpp"
@@ -12,40 +14,59 @@
 using namespace ball_plate;
 
 // ── Hardware ────────────────────────────────────────────────
-static Adafruit_PWMServoDriver pwmDriver(PCA9685_ADDR);
-static PCA9685Servo realServoX(pwmDriver, SERVO_X_CHANNEL);
-static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
+// static Adafruit_PWMServoDriver pwmDriver(PCA9685_ADDR);
+// static PCA9685Servo realServoX(pwmDriver, SERVO_X_CHANNEL);
+// static PCA9685Servo realServoY(pwmDriver, SERVO_Y_CHANNEL);
 
-static IServo* servoX = &realServoX;
-static IServo* servoY = &realServoY;
+static HardwareSerial& dbgSerial = Serial1;
+static HardwareSerial& posSerial = Serial1;
+static HardwareSerial& remoteSerial = Serial2;
+
+static ArduinoServo realServoX(SERVO_X_PIN);
+static ArduinoServo realServoY(SERVO_Y_PIN);
+
+static IServo& servoX = realServoX;
+static IServo& servoY = realServoY;
 
 static PIDController pidX(KP, KI, KD, CENTER_X);
 static PIDController pidY(KP, KI, KD, CENTER_Y);
 
+static UartPosProvider realPosProvider(posSerial, CAMERA_BAUD);
+static IPosProvider& posProvider = realPosProvider;
 
-static UartPosProvider realPosProvider(Serial1, CAMERA_BAUD);
-static IPosProvider* posProvider = &realPosProvider;
-
-static ControlLoop control(*posProvider, pidX, pidY, *servoX, *servoY);
+static ControlLoop control(posProvider, pidX, pidY, servoX, servoY);
 static bool ledState = false;
 
 // ── Remote control ─────────────────────────────────────────
 static CommandDispatcher dispatcher;
-static SerialReceiver   remoteReceiver(Serial, HOST_BAUD);
+static SerialReceiver   remoteReceiver(remoteSerial, HOST_BAUD);
+
+inline void reportToHost(const char* label, float curr,
+                         const PIDController& pid, float angle) {
+    if constexpr (ENABLE_HOST_REPORT) {
+        dbgSerial.print(label);               dbgSerial.print(':');
+        dbgSerial.print(curr, 2);             dbgSerial.print(',');
+        dbgSerial.print(pid.target(), 2);     dbgSerial.print(',');
+        dbgSerial.print(pid.lastError(), 2);  dbgSerial.print(',');
+        dbgSerial.print(pid.lastOutput(), 2); dbgSerial.print(',');
+        dbgSerial.println(angle, 2);
+    }
+}
 
 void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
 
-    Serial.begin(HOST_BAUD);
-    posProvider->begin();
+    Serial1.begin(HOST_BAUD);
+    Serial2.begin(HOST_BAUD);
+    posProvider.begin();
 
-    Wire.begin();
-    pwmDriver.begin();
-    pwmDriver.setPWMFreq(PCA9685_PWM_FREQ);
+    // Wire.begin();
+    // pwmDriver.begin();
+    // pwmDriver.setPWMFreq(PCA9685_PWM_FREQ);
 
-    servoX->write(SERVO_CENTER);
-    servoY->write(SERVO_CENTER);
+    servoX.write(SERVO_CENTER);
+    servoY.write(SERVO_CENTER);
 
     control.begin();  // start Timer ISR at CONTROL_FREQ_HZ
 
@@ -59,7 +80,7 @@ void setup() {
 
 void loop() {
     // Drain UART buffer → update latest position (main context, not ISR)
-    posProvider->update();
+    posProvider.update();
 
     if constexpr (ENABLE_REMOTE) {
         dispatcher.poll(remoteReceiver);

@@ -11,7 +11,7 @@ public:
         : _serial(serial), _baud(baud) {}
 
     void begin() override {
-        _serial.begin(_baud);
+        // _serial.begin(_baud);
     }
 
     /// Call frequently from loop() to drain UART buffer and update latest position

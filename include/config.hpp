@@ -17,6 +17,10 @@ constexpr uint8_t  SERVO_X_CHANNEL   = 0;     // PCA9685 channel for X axis
 constexpr uint8_t  SERVO_Y_CHANNEL   = 1;     // PCA9685 channel for Y axis
 constexpr float    SERVO_CENTER      = 90.0f; // degrees
 
+// ── Arduino Servo ─────────────────────────────────────────
+constexpr int SERVO_X_PIN = PD14;
+constexpr int SERVO_Y_PIN = PE14;
+
 // ── PID gains ───────────────────────────────────────────────
 constexpr float KP = 0.8f;
 constexpr float KI = 0.02f;
