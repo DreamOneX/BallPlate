@@ -12,6 +12,7 @@
 #include <command_dispatcher.hpp>
 #include <serial_receiver.hpp>
 #include "remote/remote_handler.hpp"
+#include "wiring_constants.h"
 
 using namespace ball_plate;
 
@@ -61,6 +62,8 @@ inline void reportToHost(const char* label, float curr,
 void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
+    pinMode(PF2, OUTPUT);
+    digitalWrite(PF2, HIGH);
 
     Serial_1.begin(HOST_BAUD);
     Serial_2.begin(HOST_BAUD);
@@ -100,5 +103,7 @@ void loop() {
         ledState = !ledState;
         digitalWrite(LED1_PIN, ledState);
         digitalWrite(LED2_PIN, !ledState);
+    } else {
+        dbgSerial.println("waitting...");
     }
 }
