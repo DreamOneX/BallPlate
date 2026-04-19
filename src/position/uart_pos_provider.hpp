@@ -39,6 +39,9 @@ public:
 
 private:
     static bool parse(const char* line, Position& out) {
+        // TODO: check Question here
+        // skip first character
+        // line++;
         char* comma = strchr(line, ',');
         if (!comma) return false;
 

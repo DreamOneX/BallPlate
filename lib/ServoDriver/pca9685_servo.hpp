@@ -26,6 +26,8 @@ public:
                  uint16_t maxUs = kDefaultMaxPulseUs)
         : driver_(driver), channel_(channel), minUs_(minUs), maxUs_(maxUs) {}
 
+    void begin() override {}
+
     /// Write the target angle (degrees) with the configured offset applied.
     void write(float angle) override {
         float effective = angle + offset_;

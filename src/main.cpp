@@ -5,7 +5,7 @@
 #include "HardwareSerial.h"
 #include <Servo.h>
 #include <servo_interface.hpp>
-#include <arduino_servo.hpp>
+#include <stm32_pwm_servo.hpp>
 #include <pid_controller.hpp>
 #include "position/uart_pos_provider.hpp"
 #include "control_loop.hpp"
@@ -23,13 +23,22 @@ using namespace ball_plate;
 
 static HardwareSerial Serial_1(PA9, PA10);
 static HardwareSerial Serial_2(PA3, PA2);
+static HardwareSerial OpenMVSerial(PC11, PC10);
 
 static HardwareSerial& dbgSerial = Serial_1;
-static HardwareSerial& posSerial = Serial_2;
+static HardwareSerial& posSerial = OpenMVSerial;
 static HardwareSerial& remoteSerial = Serial_2;
 
-static ArduinoServo realServoX(SERVO_X_PIN);
-static ArduinoServo realServoY(SERVO_Y_PIN);
+// static ArduinoServo realServoX(SERVO_X_PIN);
+// static ArduinoServo realServoY(SERVO_Y_PIN);
+
+// X: TIM1_CH4
+static Stm32PwmTimer servoTimerX(TIM1, 20000);
+// Y: TIM4_CH3
+static Stm32PwmTimer servoTimerY(TIM4, 20000);
+
+static Stm32PwmServo realServoX(servoTimerX, 4, SERVO_X_PIN, 1000, 2000);
+static Stm32PwmServo realServoY(servoTimerY, 3, SERVO_Y_PIN, 1000, 2000);
 
 static IServo& servoX = realServoX;
 static IServo& servoY = realServoY;
@@ -63,7 +72,10 @@ void setup() {
     pinMode(LED1_PIN, OUTPUT);
     pinMode(LED2_PIN, OUTPUT);
 
-    for (int i = 0; i < 50; i++) {
+    pinMode(PF2, OUTPUT);
+    digitalWrite(PF2, HIGH);
+
+    for (int i = 0; i < 5; i++) {
         digitalWrite(LED1_PIN, HIGH);
         delay(100);
         digitalWrite(LED1_PIN, LOW);
@@ -74,20 +86,22 @@ void setup() {
         delay(100);
     }
 
-    pinMode(PF2, OUTPUT);
-    digitalWrite(PF2, HIGH);
+
+    servoX.begin();
+    servoY.begin();
+    servoX.write(SERVO_CENTER);
+    servoY.write(SERVO_CENTER);
 
     Serial_1.begin(HOST_BAUD);
     Serial_1.println("Hello World");
-    Serial_2.begin(HOST_BAUD);
-    // posProvider.begin();
+    // Serial_2.begin(HOST_BAUD);
+    OpenMVSerial.begin(HOST_BAUD);
+    posProvider.begin();
 
     // Wire.begin();
     // pwmDriver.begin();
     // pwmDriver.setPWMFreq(PCA9685_PWM_FREQ);
 
-    // servoX.write(SERVO_CENTER);
-    // servoY.write(SERVO_CENTER);
 
     control.begin();  // start Timer ISR at CONTROL_FREQ_HZ
 
@@ -100,7 +114,7 @@ void setup() {
 }
 
 void loop() {
-    Serial_1.println("Hello World");
+    // Serial_1.println("Hello World");
     // Drain UART buffer → update latest position (main context, not ISR)
     posProvider.update();
 
@@ -111,16 +125,11 @@ void loop() {
     // When ISR has computed new PID output, write servos (I2C) and report
     if (control.applyOutputs()) {
         const auto& out = control.output();
-        reportToHost("X", out.posX, pidX, out.angleX);
-        reportToHost("Y", out.posY, pidY, out.angleY);
-
-    } else {
-        dbgSerial.println("waitting...");
+        // reportToHost("X", out.posX, pidX, out.angleX);
+        // reportToHost("Y", out.posY, pidY, out.angleY);
     }
 
     ledState = !ledState;
     digitalWrite(LED1_PIN, ledState);
     digitalWrite(LED2_PIN, !ledState);
-
-    Serial_1.println("Bye World");
 }

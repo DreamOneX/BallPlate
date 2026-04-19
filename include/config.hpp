@@ -18,19 +18,21 @@ constexpr uint8_t  SERVO_Y_CHANNEL   = 1;     // PCA9685 channel for Y axis
 constexpr float    SERVO_CENTER      = 90.0f; // degrees
 
 // ── Arduino Servo ─────────────────────────────────────────
-constexpr int SERVO_X_PIN = PD14;
-constexpr int SERVO_Y_PIN = PE14;
+constexpr int SERVO_X_PIN = PE14;
+constexpr int SERVO_Y_PIN = PD14;
 
 // ── PID gains ───────────────────────────────────────────────
-constexpr float KP = 0.8f;
+constexpr float KP = 0.5f;
 constexpr float KI = 0.02f;
 constexpr float KD = 0.3f;
 
 // ── Control targets ─────────────────────────────────────────
 constexpr float WIDTH = 320.0f;
 constexpr float HEIGHT = 240.0f;
-constexpr float CENTER_X = WIDTH / 2.0f;
-constexpr float CENTER_Y = HEIGHT / 2.0f;
+// constexpr float CENTER_X = WIDTH / 2.0f;
+// constexpr float CENTER_Y = HEIGHT / 2.0f;
+constexpr float CENTER_X = 201.0f;
+constexpr float CENTER_Y = 84.0f;
 
 // ── Control loop ────────────────────────────────────────────
 constexpr uint32_t CONTROL_FREQ_HZ = 60;  // Timer ISR frequency (adjustable)
